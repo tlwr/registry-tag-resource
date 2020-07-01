@@ -1,0 +1,117 @@
+#!/usr/bin/env ruby
+
+require 'json'
+
+require 'http'
+require 'semantic'
+
+SEMVER_RE = %r{^([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?$}
+
+
+inp = JSON.parse(STDIN.read)
+
+source = inp['source'] || {}
+current_v = inp['version'] || {}
+
+uri = source['uri']
+raise 'mandatory source.uri not found' if uri.nil?
+
+pages = source.fetch('pages', '1').to_i
+raise "source.pages must be a positive integer" unless pages >= 1
+
+arch = source.fetch('arch', 'amd64')
+os = source.fetch('os', 'linux')
+
+version_includes_digest = source.fetch('version_includes_digest', true)
+
+semver_matcher = source.dig('semver', 'matcher')
+semver_prefix = source.dig('semver', 'prefix') || ''
+
+regexp = source.dig('regexp')
+
+full_tags = []
+tags_url = "#{uri}/tags"
+pages.times do
+  break if tags_url.nil?
+
+  resp = HTTP.get(tags_url)
+  unless resp.code == 200
+    abort "expected 200 but received #{resp.code} from #{tags_url}"
+  end
+
+  tags_resp = JSON.parse(resp.body)
+  tags_url = tags_resp['next']
+
+  full_tags += tags_resp.fetch('results', [])
+end
+
+# remove duplicate tags in case there is a push while paginating
+full_tags = full_tags.uniq { |full_tag| full_tag['name'] }
+
+# only make tags available if they have images with correct os and arch
+full_tags = full_tags.filter_map do |full_tag|
+  images = full_tag['images'].select do |i|
+    i['architecture'] == arch && i['os'] == os
+  end
+
+  full_tag['images'] = images
+
+  images.empty? ? nil : full_tag
+end
+
+# if using semver only make tags available if the tag satisfies semver matcher
+if semver_matcher
+  full_tags = full_tags.select { |ft| ft['name'].match?(SEMVER_RE) }
+
+  full_tags = full_tags.select do |full_tag|
+    v = Semantic::Version.new(full_tag['name'].sub(/semver_prefix/, ''))
+    v.satisfies? semver_matcher
+  end
+end
+
+# if using regexp select matching tags only
+# this can be combined with semver to discard pre-releases etc
+if regexp
+  full_tags = full_tags.select { |ft| ft['name'].match?(/#{regexp}/) }
+end
+
+
+all_versions = full_tags.map do |full_tag|
+  digest = full_tag['images'].last['digest']
+  tag = full_tag['name']
+  last_updated = full_tag['last_updated']
+
+  if version_includes_digest
+    { last_updated: last_updated, tag: tag, digest: digest }
+  else
+    { last_updated: last_updated, tag: tag }
+  end
+end
+
+all_versions = all_versions.map do |v|
+  v.merge({ os: os, arch: arch})
+end
+
+if semver_matcher
+  all_versions = all_versions.sort_by do |v|
+    semver_without_prefix = v[:tag].sub(/semver_prefix/, '')
+    Gem::Version.new(semver_without_prefix)
+  end
+else
+  # order most recent last
+  all_versions = all_versions.sort_by { |v| v[:last_updated] }
+end
+
+# discard versions that were created before the current version
+unless current_v.keys.empty?
+  all_versions = all_versions.drop_while do |v|
+    last = v
+    if version_includes_digest
+      v[:digest] != current_v['digest'] && v[:tag] != current_v['tag']
+    else
+      v[:tag] != current_v['tag']
+    end
+  end
+end
+
+puts all_versions.to_json
