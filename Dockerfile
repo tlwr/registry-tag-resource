@@ -1,0 +1,16 @@
+FROM ruby:2.7.1-alpine
+
+RUN apk add --no-cache build-base ruby-dev
+
+RUN mkdir /registry-tag-resource
+WORKDIR /registry-tag-resource
+
+COPY $PWD/Gemfile .
+COPY $PWD/Gemfile.lock .
+
+RUN bundle install
+
+COPY $PWD /registry-tag-resource
+
+RUN mkdir -p /opt/resource && \
+    ln -s /registry-tag-resource/bin/check /opt/resource/check
