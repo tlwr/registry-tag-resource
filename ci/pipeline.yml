@@ -1,0 +1,26 @@
+---
+
+resource_types:
+  - name: registry-tag
+    type: registry-image
+    source:
+      repository: tlwr/registry-tag-resource
+      tag: 1593645049
+
+resources:
+  - name: ruby-img-tag
+    type: registry-tag
+    icon: tag
+    check_every: 15m
+    source:
+      uri: https://hub.docker.com/v2/repositories/library/ruby
+      pages: 3
+      regexp: '^[0-9]+[.][0-9]+[.][0-9]+$'
+      semver:
+        matcher: '>= 2.7'
+
+jobs:
+  - name: get-tags
+    serial: true
+    plan:
+      - get: ruby-img-tag
