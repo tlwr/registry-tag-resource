@@ -5,7 +5,7 @@ resource_types:
     type: registry-image
     source:
       repository: tlwr/registry-tag-resource
-      tag: 1593683738
+      tag: 1593696431
 
 resources:
   - name: ruby-img-tag
@@ -27,10 +27,34 @@ resources:
       branch: main
 
 jobs:
-  - name: get-tags
+  - name: get-tag
     serial: true
     plan:
       - get: ruby-img-tag
+
+      - task: show-resource-contents
+        config:
+          platform: linux
+
+          image_resource:
+            type: registry-image
+            source:
+              repository: ruby
+              tag: 2.7.1
+
+          inputs:
+            - name: ruby-img-tag
+
+          run:
+            path: sh
+            args:
+              - -c
+              - |
+                set -eu
+
+                for f in ruby-img-tag/*; do
+                  echo "$f has contents $(cat "$f")"
+                done
 
   - name: set-pipeline
     serial: true
