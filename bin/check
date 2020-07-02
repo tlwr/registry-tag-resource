@@ -49,7 +49,7 @@ if semver_matcher
   tags = tags.select { |t| t.match?(SEMVER_RE) }
 
   tags = tags.select do |t|
-    v = Semantic::Version.new(t.sub(/semver_prefix/, ''))
+    v = Semantic::Version.new(t.sub(/#{semver_prefix}/, ''))
     v.satisfies? semver_matcher
   end
 end
