@@ -41,4 +41,18 @@ class RegistryV2Client
 
     tags
   end
+
+  def get_digest(tag)
+    tag_url = "#{url}/manifests/#{tag}"
+
+    resp = HTTP.get(tag_url)
+    unless resp.code == 200
+      raise "expected 200 but received #{resp.code} from #{tag_url}"
+    end
+
+    # throw exception if cannot parse body
+    JSON.parse(resp.body)
+
+    resp['docker-content-digest']
+  end
 end
