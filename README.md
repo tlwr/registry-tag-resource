@@ -15,20 +15,21 @@ source:
   #
   # for docker hub https://hub.docker.com/v2/user_or_org/image_name
   #
+  # for example https://hub.docker.com/v2/library/ruby for _/ruby
+  # for example https://quay.io/v2/coreos/etcd'
+  #
   # mandatory
   uri: https://hub.docker.com/v2/repositories/governmentpaas/cf-cli
 
-  # architecture
-  #
-  # optional ; default amd64 ; eg amd arm arm64 386
-  arch: amd64
-
   # how many pages to check in the registry
-  #
-  # for hub.docker.com 1 page corresponds to the 10 most recent tags
   #
   # optional ; default 1
   pages: 1
+
+  # how many tags to fetch per page
+  #
+  # optional ; default 25
+  tags_per_page: 50
 
   # if the digest should be included in the version
   # this is useful for generating new versions if the digest changes
@@ -52,4 +53,16 @@ source:
     # optional
     prefix: 'v'
     
+```
+
+## `check` - check for new tags
+
+the `check` step looks at the configured registry for new tags for the image
+
+an example version:
+
+```json
+{
+  "tag": "2.7.1"
+}
 ```

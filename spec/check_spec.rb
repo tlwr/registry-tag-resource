@@ -63,42 +63,23 @@ RSpec.describe 'check' do
         expect(err).to eq('')
         expect(status).to be(0)
 
-        expect(versions.length).to be(10)
+        expect(versions.length).to eq(10)
         expect(versions).to all(satisfy { |v| v['tag'].is_a? String })
-        expect(versions).to all(satisfy { |v| v['digest'].is_a? String })
-      end
-    end
-
-    context 'when ignoring digests' do
-      before do
-        input['source']['version_includes_digest'] = false
-      end
-
-      it 'generates 10 versions without digests' do
-        expect(err).to eq('')
-        expect(status).to be(0)
-
-        expect(versions.length).to be(10)
-        expect(versions).to all(satisfy { |v| v['tag'].is_a? String })
-        expect(versions).to all(satisfy { |v| v['digest'].nil? })
-
-        ordered = versions.sort_by { |v| v['last_updated'] }
-        expect(versions).to eq(ordered)
       end
     end
 
     context 'when getting multiple pages' do
       before do
         input['source']['pages'] = 2
+        input['source']['tags_per_page'] = 25
       end
 
-      it 'generates 20 versions' do
+      it 'generates 50 versions' do
         expect(err).to eq('')
         expect(status).to be(0)
 
-        expect(versions.length).to be(20)
+        expect(versions.length).to eq(50)
         expect(versions).to all(satisfy { |v| v['tag'].is_a? String })
-        expect(versions).to all(satisfy { |v| v['digest'].is_a? String })
 
         ordered = versions.sort_by { |v| v['last_updated'] }
         expect(versions).to eq(ordered)
@@ -111,7 +92,8 @@ RSpec.describe 'check' do
           'matcher': '>= 2.6.0'
         }
         input['source']['regexp'] = '^[0-9]+[.][0-9]+[.][0-9]+$'
-        input['source']['pages'] = 10
+        input['source']['pages'] = 2
+        input['source']['tags_per_page'] = 50
       end
 
 
@@ -121,7 +103,6 @@ RSpec.describe 'check' do
 
         expect(versions.length).to be >= 1
         expect(versions).to all(satisfy { |v| v['tag'].is_a? String })
-        expect(versions).to all(satisfy { |v| v['digest'].is_a? String })
 
         ordered = versions.sort_by { |v| Gem::Version.new(v['tag']) }
         expect(versions).to eq(ordered)
@@ -129,8 +110,6 @@ RSpec.describe 'check' do
 
       context 'when a current version exists' do
         before do
-          # ignore digests to simplify test
-          input['source']['version_includes_digest'] = false
           input['version'] = { "tag": "2.6.6" }
         end
 
@@ -140,11 +119,62 @@ RSpec.describe 'check' do
 
           expect(versions.length).to be >= 1
           expect(versions).to all(satisfy { |v| v['tag'].is_a? String })
-          expect(versions).to all(satisfy { |v| v['digest'].nil? })
 
           ordered = versions.sort_by { |v| Gem::Version.new(v['tag']) }
           expect(versions).to eq(ordered)
         end
+      end
+    end
+
+    context 'when filtering by regexp' do
+      before do
+        input['source']['regexp'] = '^2[.][0-9]+[.][0-9]+$'
+        input['source']['pages'] = 2
+        input['source']['tags_per_page'] = 50
+      end
+
+      it 'generates at least one version' do
+        expect(err).to eq('')
+        expect(status).to be(0)
+
+        expect(versions.length).to be >= 1
+        expect(versions).to all(satisfy { |v| v['tag'].is_a? String })
+      end
+
+      context 'when a current version exists' do
+        before do
+          input['version'] = { "tag": "2.6.6" }
+        end
+
+        it 'generates only versions equal or after the current version' do
+          expect(err).to eq('')
+          expect(status).to be(0)
+
+          expect(versions.length).to be >= 1
+          expect(versions).to all(satisfy { |v| v['tag'].is_a? String })
+
+          expect(versions).to include({ 'tag' => '2.6.6' })
+          expect(versions).not_to include({ 'tag' => '2.6.5' })
+
+          ordered = versions.sort_by { |v| Gem::Version.new(v['tag']) }
+          expect(versions).to eq(ordered)
+        end
+      end
+    end
+
+    context 'when using quay.io' do
+      before do
+        input['source']['uri'] = 'https://quay.io/v2/coreos/etcd'
+        input['source']['tags_per_page'] = 25
+        input['source']['pages'] = 2
+      end
+
+      it 'generates 50 versions' do
+        expect(err).to eq('')
+        expect(status).to be(0)
+
+        expect(versions.length).to eq(50)
+        expect(versions).to all(satisfy { |v| v['tag'].is_a? String })
       end
     end
   end
