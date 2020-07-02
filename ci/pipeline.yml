@@ -71,3 +71,31 @@ jobs:
 
                 bundle install
                 bundle exec rspec
+
+  - name: build
+    serial: true
+    plan:
+      - get: registry-tag-resource-src
+        passed: [test]
+        trigger: true
+
+      - task: build-img
+        privileged: true
+        config:
+          platform: linux
+
+          image_resource:
+            type: registry-image
+            source:
+              repository: vito/oci-build-task
+              tag: 0.3.0
+
+          inputs:
+            - name: registry-tag-resource-src
+              path: .
+
+          outputs:
+            - name: image
+
+          run:
+            path: build
