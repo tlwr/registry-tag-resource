@@ -29,6 +29,7 @@ resources:
 jobs:
   - name: get-tag
     serial: true
+    public: true
     plan:
       - get: ruby-img-tag
 
@@ -67,6 +68,7 @@ jobs:
 
   - name: test
     serial: true
+    public: true
     plan:
       - get: registry-tag-resource-src
         passed: [set-pipeline]
@@ -98,6 +100,7 @@ jobs:
 
   - name: build
     serial: true
+    public: true
     plan:
       - get: registry-tag-resource-src
         passed: [test]
