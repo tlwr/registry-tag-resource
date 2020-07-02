@@ -13,4 +13,5 @@ RUN bundle install
 COPY $PWD /registry-tag-resource
 
 RUN mkdir -p /opt/resource && \
-    ln -s /registry-tag-resource/bin/check /opt/resource/check
+    ln -s /registry-tag-resource/bin/check /opt/resource/check && \
+    ln -s /registry-tag-resource/bin/in /opt/resource/in

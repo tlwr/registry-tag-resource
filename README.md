@@ -66,3 +66,10 @@ an example version:
   "tag": "2.7.1"
 }
 ```
+
+## `in` - fetch registry image metadata
+
+produces the following files:
+
+* `tag`
+* `digest`

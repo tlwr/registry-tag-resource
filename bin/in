@@ -1,0 +1,41 @@
+#!/usr/bin/env ruby
+
+require 'json'
+
+require 'http'
+
+require_relative '../lib/docker_hub_client'
+require_relative '../lib/registry_v2_client'
+
+destination = ARGV[0]
+raise 'destination ($1) not given' if ARGV.empty?
+
+inp = JSON.parse(STDIN.read)
+
+source = inp['source'] || {}
+
+uri = source['uri']
+raise 'mandatory source.uri not found' if uri.nil?
+
+current_version = inp['version'] || {}
+tag = current_version['tag']
+raise 'mandatory version.tag not found' if tag.nil?
+
+digest = nil
+if uri.include?('hub.docker.com')
+  digest = DockerHubClient.new(uri).get_digest(tag)
+else
+  digest = RegistryV2Client.new(uri).get_digest(tag)
+end
+
+File.write("#{destination}/tag", tag)
+File.write("#{destination}/digest", digest)
+
+output = {
+  version: current_version,
+  metadata: [
+    { name: 'tag', value: tag },
+    { name: 'digest', value: digest },
+  ],
+}
+puts output.to_json
