@@ -31,12 +31,6 @@ source:
   # optional ; default 25
   tags_per_page: 50
 
-  # if the digest should be included in the version
-  # this is useful for generating new versions if the digest changes
-  #
-  # optional ; default true
-  version_includes_digest: true
-
   # ruby regular expression for filtering tags
   #
   # optional
