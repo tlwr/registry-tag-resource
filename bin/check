@@ -6,6 +6,9 @@ require 'http'
 require 'link_header'
 require 'semantic'
 
+require_relative '../lib/docker_hub_client'
+require_relative '../lib/registry_v2_client'
+
 SEMVER_RE = %r{^([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?$}
 
 
@@ -32,39 +35,11 @@ semver_prefix = source.dig('semver', 'prefix') || ''
 regexp = source.dig('regexp')
 
 tags = []
-
-tags_url = "#{uri}/tags"
-tags_url += '/list' unless uri.include?('hub.docker.com')
-
-tags_url += "?page_size=#{tags_per_page}" if uri.include?('hub.docker.com')
-tags_url += "?n=#{tags_per_page}" unless uri.include?('hub.docker.com')
-
-pages.times do
-  break if tags_url.nil?
-
-  resp = HTTP.get(tags_url)
-  unless resp.code == 200
-    abort "expected 200 but received #{resp.code} from #{tags_url}"
-  end
-
-  tags_resp = JSON.parse(resp.body)
-  if tags_resp['next']
-    tags_url = tags_resp['next']
-  elsif resp['link']
-    links = LinkHeader.parse(resp['link'])
-    next_href = links.find_link(['rel', 'next'])&.href
-    unless next_href.nil?
-      tags_url = tags_url.sub(%r{/v2/.*$}, next_href)
-    end
-  end
-
-  if tags_resp.key? 'results'
-    tags += tags_resp.fetch('results', []).map { |ft| ft['name'] }
-  elsif tags_resp.key? 'tags'
-    tags += tags_resp.fetch('tags', [])
-  end
+if uri.include?('hub.docker.com')
+  tags = DockerHubClient.new(uri).list_tags(pages, tags_per_page)
+else
+  tags = RegistryV2Client.new(uri).list_tags(pages, tags_per_page)
 end
-
 
 # remove duplicate tags in case there is a push while paginating
 tags = tags.uniq
