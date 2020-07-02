@@ -5,7 +5,7 @@ a [concourse](https://concourse-ci.org) resource for tags in a oci registry
 ## operations
 
 * `check` - looks for tags
-* `in` - downloads metadata about the tag (todo)
+* `in` - downloads metadata about the tag
 
 ## configuration
 
