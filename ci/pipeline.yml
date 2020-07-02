@@ -32,10 +32,20 @@ jobs:
     plan:
       - get: ruby-img-tag
 
+  - name: set-pipeline
+    serial: true
+    plan:
+      - get: registry-tag-resource-src
+        trigger: true
+
+      - set_pipeline: registry-tag-resource
+        file: registry-tag-resource-src/ci/pipeline.yml
+
   - name: test
     serial: true
     plan:
       - get: registry-tag-resource-src
+        passed: [set-pipeline]
         trigger: true
 
       - task: run-tests
