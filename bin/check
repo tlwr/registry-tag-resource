@@ -26,9 +26,6 @@ raise "source.pages must be a positive integer" unless pages >= 1
 tags_per_page = source.fetch('tags_per_page', '10').to_i
 raise "source.tags_per_page must be a positive integer" unless tags_per_page >= 1
 
-arch = source.fetch('arch', 'amd64')
-os = source.fetch('os', 'linux')
-
 semver_matcher = source.dig('semver', 'matcher')
 semver_prefix = source.dig('semver', 'prefix') || ''
 
