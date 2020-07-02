@@ -19,7 +19,7 @@ class DockerHubClient
 
       resp = HTTP.get(tags_url)
       unless resp.code == 200
-        abort "expected 200 but received #{resp.code} from #{tags_url}"
+        raise "expected 200 but received #{resp.code} from #{tags_url}"
       end
 
       tags_resp = JSON.parse(resp.body)
