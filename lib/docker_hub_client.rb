@@ -31,4 +31,21 @@ class DockerHubClient
 
     tags
   end
+
+  def get_digest(tag)
+    tag_url = "#{url}/tags/#{tag}"
+
+    resp = HTTP.get(tag_url)
+    unless resp.code == 200
+      raise "expected 200 but received #{resp.code} from #{tag_url}"
+    end
+
+    tag_resp = JSON.parse(resp.body)
+
+    image = tag_resp['images'].find do |i|
+      i['os'] == 'linux' && i['architecture'] == 'amd64'
+    end
+
+    image&.fetch('digest')
+  end
 end
