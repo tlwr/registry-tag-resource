@@ -19,8 +19,45 @@ resources:
       semver:
         matcher: '>= 2.7'
 
+  - name: registry-tag-resource-src
+    type: git
+    icon: git
+    source:
+      uri: https://github.com/tlwr/registry-tag-resource.git
+      branch: main
+
 jobs:
   - name: get-tags
     serial: true
     plan:
       - get: ruby-img-tag
+
+  - name: test
+    serial: true
+    plan:
+      - get: registry-tag-resource-src
+        trigger: true
+
+      - task: run-tests
+        config:
+          platform: linux
+
+          image_resource:
+            type: registry-image
+            source:
+              repository: ruby
+              tag: 2.7.1
+
+          inputs:
+            - name: registry-tag-resource-src
+
+          run:
+            path: sh
+            dir: registry-tag-resource-src
+            args:
+              - -c
+              - |
+                set -eu
+
+                bundle install
+                bundle exec rspec
