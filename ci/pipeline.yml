@@ -15,7 +15,7 @@ resources:
     source:
       uri: https://hub.docker.com/v2/repositories/library/ruby
       pages: 3
-      regexp: '^[0-9]+[.][0-9]+[.][0-9]+$'
+      regexp: '^[0-9]+[.][0-9]+[.][0-9]+-alpine$'
       semver:
         matcher: '>= 2.7'
 
