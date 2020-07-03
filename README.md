@@ -67,3 +67,59 @@ produces the following files:
 
 * `tag`
 * `digest`
+
+## examples
+
+### dynamically generate docker image using build args
+
+using a [Dockerfile](Dockerfile) with a build arg:
+
+```Dockerfile
+BUILD_ARG ruby_version
+FROM ruby:$ruby_version
+
+...
+```
+
+a pipeline that uses the
+[oci-build-task](https://github.com/vito/oci-build-task) can dynamically
+build docker images using `BUILD-ARG_` params:
+
+```yaml
+name: dynamically-build-image
+plan:
+
+  # source code
+  - get: my-src 
+
+  # registry-tag
+  - get: ruby-img-tag
+  
+  # make tag file from resource available as a variable
+  - load_var: ruby-version
+    file: ruby-img-tag/tag
+
+  - task: build-img
+    privileged: true
+    config:
+      platform: linux
+
+      image_resource:
+        type: registry-image
+        source:
+          repository: vito/oci-build-task
+
+      inputs:
+        - name: my-src
+          path: .
+
+      outputs:
+        - name: image
+
+      params:
+        # load ruby version for build task
+        BUILD_ARG_ruby_version: ((.:ruby-version))
+
+      run:
+        path: build
+```
