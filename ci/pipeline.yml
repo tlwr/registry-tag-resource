@@ -106,6 +106,12 @@ jobs:
         passed: [test]
         trigger: true
 
+      - get: ruby-img-tag
+        trigger: true
+
+      - load_var: ruby-version
+        file: ruby-img-tag/tag
+
       - task: build-img
         privileged: true
         config:
@@ -123,6 +129,9 @@ jobs:
 
           outputs:
             - name: image
+
+          params:
+            BUILD_ARG_ruby_version: ((.:ruby-version))
 
           run:
             path: build

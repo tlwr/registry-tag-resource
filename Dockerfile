@@ -1,4 +1,5 @@
-FROM ruby:2.7.1-alpine
+ARG ruby_version
+FROM ruby:$ruby_version
 
 RUN apk add --no-cache build-base ruby-dev
 
