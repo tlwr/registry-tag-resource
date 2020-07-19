@@ -26,6 +26,14 @@ resources:
       uri: https://github.com/tlwr/registry-tag-resource.git
       branch: main
 
+  - name: registry-tag-resource-img
+    type: registry-image
+    icon: docker
+    source:
+      repository: ((registry-secrets.registry))/registry-tag-resource
+      username: ((registry-secrets.username))
+      password: ((registry-secrets.password))
+
 jobs:
   - name: get-tag
     serial: true
@@ -135,3 +143,7 @@ jobs:
 
           run:
             path: build
+
+      - put: registry-tag-resource-img
+        params:
+          image: image/image.tar
