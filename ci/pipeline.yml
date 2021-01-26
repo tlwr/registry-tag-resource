@@ -30,9 +30,9 @@ resources:
     type: registry-image
     icon: docker
     source:
-      repository: ((registry-secrets.registry))/registry-tag-resource
-      username: ((registry-secrets.username))
-      password: ((registry-secrets.password))
+      repository: ghcr.io/tlwr/registry-tag-resource
+      username: ((docker-secrets.username))
+      password: ((docker-secrets.password))
 
 jobs:
   - name: get-tag
@@ -147,3 +147,6 @@ jobs:
       - put: registry-tag-resource-img
         params:
           image: image/image.tar
+          additional_tags: registry-tag-resource-src/.git/ref
+        get_params:
+          skip_download: true
