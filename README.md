@@ -2,6 +2,10 @@
 
 a [concourse](https://concourse-ci.org) resource for tags in a oci registry
 
+a
+[blog post on www.toby.codes](https://www.toby.codes/posts/2021-05-Automatic-updates-of-Docker-images-with-Concourse)
+describes how this resource type can be used
+
 ## operations
 
 * `check` - looks for tags
