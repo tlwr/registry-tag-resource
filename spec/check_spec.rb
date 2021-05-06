@@ -89,7 +89,7 @@ RSpec.describe 'check' do
     context 'when filtering by semantic versions' do
       before do
         input['source']['semver'] = {
-          'matcher': '>= 2.6.0'
+          'matcher': '>= 2.7.0'
         }
         input['source']['regexp'] = '^[0-9]+[.][0-9]+[.][0-9]+$'
         input['source']['pages'] = 2
@@ -110,7 +110,7 @@ RSpec.describe 'check' do
 
       context 'when a current version exists' do
         before do
-          input['version'] = { "tag": "2.6.6" }
+          input['version'] = { "tag": "2.7.1" }
         end
 
         it 'generates only versions equal or after the current version' do
@@ -143,7 +143,7 @@ RSpec.describe 'check' do
 
       context 'when a current version exists' do
         before do
-          input['version'] = { "tag": "2.6.6" }
+          input['version'] = { "tag": "2.7.1" }
         end
 
         it 'generates only versions equal or after the current version' do
@@ -153,8 +153,8 @@ RSpec.describe 'check' do
           expect(versions.length).to be >= 1
           expect(versions).to all(satisfy { |v| v['tag'].is_a? String })
 
-          expect(versions).to include({ 'tag' => '2.6.6' })
-          expect(versions).not_to include({ 'tag' => '2.6.5' })
+          expect(versions).to include({ 'tag' => '2.7.1' })
+          expect(versions).not_to include({ 'tag' => '2.7.0' })
 
           ordered = versions.sort_by { |v| Gem::Version.new(v['tag']) }
           expect(versions).to eq(ordered)
