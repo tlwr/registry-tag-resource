@@ -25,6 +25,14 @@ source:
   # mandatory
   uri: https://hub.docker.com/v2/repositories/governmentpaas/cf-cli
 
+  # basic auth
+  #
+  # only works for registries, does not work for docker hub
+  #
+  # optional
+  username: my-registry-username
+  password: my-secret-password
+
   # how many pages to check in the registry
   #
   # optional ; default 1
