@@ -25,7 +25,7 @@ RSpec.describe RegistryV2Client do
       let(:client) { RegistryV2Client.new(quay_io_etcd_uri) }
 
       it 'does not apply basic auth' do
-        expect(client.http.headers.get('Authorization')).to be_nil
+        expect(client.http.default_options.headers.get('Authorization')).to be_empty
       end
     end
 
@@ -33,7 +33,7 @@ RSpec.describe RegistryV2Client do
       let(:client) { RegistryV2Client.new(quay_io_etcd_uri, username='un', password='pw') }
 
       it 'applies' do
-        expect(client.http.headers.get('Authorization')).to eq('Basic dW46cHc=')
+        expect(client.http.default_options.headers.get('Authorization')).to eq(['Basic dW46cHc='])
       end
     end
   end
