@@ -5,8 +5,11 @@ require 'http'
 class RegistryV2Client
   attr_reader :url
 
-  def initialize(url)
+  def initialize(url, username="", password="")
     @url = url
+
+    @un = username
+    @pw = password
   end
 
   def list_tags(pages, tags_per_page)
@@ -17,7 +20,7 @@ class RegistryV2Client
     pages.times do
       break if tags_url.nil?
 
-      resp = HTTP.get(tags_url)
+      resp = http.get(tags_url)
       unless resp.code == 200
         raise "expected 200 but received #{resp.code} from #{tags_url}"
       end
@@ -45,7 +48,7 @@ class RegistryV2Client
   def get_digest(tag)
     tag_url = "#{url}/manifests/#{tag}"
 
-    resp = HTTP.get(tag_url)
+    resp = http.get(tag_url)
     unless resp.code == 200
       raise "expected 200 but received #{resp.code} from #{tag_url}"
     end
@@ -54,5 +57,13 @@ class RegistryV2Client
     JSON.parse(resp.body)
 
     resp['docker-content-digest']
+  end
+
+  def http
+    h = HTTP
+
+    h = HTTP.basic_auth(user: @un, pass: @pw) unless @un.empty? && @pw.empty?
+
+    h
   end
 end

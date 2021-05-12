@@ -19,4 +19,22 @@ RSpec.describe RegistryV2Client do
       match('expected 200 but received 404')
     )
   end
+
+  describe 'basic auth' do
+    context 'when there is no username or password' do
+      let(:client) { RegistryV2Client.new(quay_io_etcd_uri) }
+
+      it 'does not apply basic auth' do
+        expect(client.http.headers.get('Authorization')).to be_nil
+      end
+    end
+
+    context 'when there is a username and password' do
+      let(:client) { RegistryV2Client.new(quay_io_etcd_uri, username='un', password='pw') }
+
+      it 'applies' do
+        expect(client.http.headers.get('Authorization')).to eq('Basic dW46cHc=')
+      end
+    end
+  end
 end
