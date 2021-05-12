@@ -17,15 +17,24 @@ source = inp['source'] || {}
 uri = source['uri']
 raise 'mandatory source.uri not found' if uri.nil?
 
+username = source.fetch('username', '')
+password = source.fetch('password', '')
+
 current_version = inp['version'] || {}
 tag = current_version['tag']
 raise 'mandatory version.tag not found' if tag.nil?
 
 digest = nil
 if uri.include?('hub.docker.com')
+  raise 'basic auth not supported' unless username.empty? && password.empty?
+
   digest = DockerHubClient.new(uri).get_digest(tag)
 else
-  digest = RegistryV2Client.new(uri).get_digest(tag)
+  digest = RegistryV2Client.new(
+    uri,
+    username=username,
+    password=password,
+  ).get_digest(tag)
 end
 
 File.write("#{destination}/tag", tag)
