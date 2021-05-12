@@ -26,6 +26,9 @@ raise "source.pages must be a positive integer" unless pages >= 1
 tags_per_page = source.fetch('tags_per_page', '10').to_i
 raise "source.tags_per_page must be a positive integer" unless tags_per_page >= 1
 
+username = source.fetch('username', '')
+password = source.fetch('password', '')
+
 semver_matcher = source.dig('semver', 'matcher')
 semver_prefix = source.dig('semver', 'prefix') || ''
 
@@ -33,9 +36,15 @@ regexp = source.dig('regexp')
 
 tags = []
 if uri.include?('hub.docker.com')
+  raise 'basic auth not supported' unless username.empty? && password.empty?
+
   tags = DockerHubClient.new(uri).list_tags(pages, tags_per_page)
 else
-  tags = RegistryV2Client.new(uri).list_tags(pages, tags_per_page)
+  tags = RegistryV2Client.new(
+    uri,
+    username=username,
+    password=password,
+  ).list_tags(pages, tags_per_page)
 end
 
 # remove duplicate tags in case there is a push while paginating
