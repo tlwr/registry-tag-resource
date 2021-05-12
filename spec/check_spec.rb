@@ -88,8 +88,9 @@ RSpec.describe 'check' do
 
     context 'when filtering by semantic versions' do
       before do
+        input['source']['uri'] = 'https://hub.docker.com/v2/repositories/library/golang'
         input['source']['semver'] = {
-          'matcher': '>= 2.7.0'
+          'matcher': '>= 1.16.4'
         }
         input['source']['regexp'] = '^[0-9]+[.][0-9]+[.][0-9]+$'
         input['source']['pages'] = 2
@@ -110,7 +111,7 @@ RSpec.describe 'check' do
 
       context 'when a current version exists' do
         before do
-          input['version'] = { "tag": "2.7.1" }
+          input['version'] = { "tag": "1.16.4" }
         end
 
         it 'generates only versions equal or after the current version' do
@@ -128,7 +129,8 @@ RSpec.describe 'check' do
 
     context 'when filtering by regexp' do
       before do
-        input['source']['regexp'] = '^2[.][0-9]+[.][0-9]+$'
+        input['source']['uri'] = 'https://hub.docker.com/v2/repositories/library/golang'
+        input['source']['regexp'] = '^1[.][0-9]+[.][0-9]+$'
         input['source']['pages'] = 2
         input['source']['tags_per_page'] = 50
       end
@@ -143,7 +145,7 @@ RSpec.describe 'check' do
 
       context 'when a current version exists' do
         before do
-          input['version'] = { "tag": "2.7.1" }
+          input['version'] = { "tag": "1.16.4" }
         end
 
         it 'generates only versions equal or after the current version' do
@@ -153,8 +155,8 @@ RSpec.describe 'check' do
           expect(versions.length).to be >= 1
           expect(versions).to all(satisfy { |v| v['tag'].is_a? String })
 
-          expect(versions).to include({ 'tag' => '2.7.1' })
-          expect(versions).not_to include({ 'tag' => '2.7.0' })
+          expect(versions).to include({ 'tag' => '1.16.4' })
+          expect(versions).not_to include({ 'tag' => '1.16.3' })
 
           ordered = versions.sort_by { |v| Gem::Version.new(v['tag']) }
           expect(versions).to eq(ordered)
