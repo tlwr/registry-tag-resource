@@ -17,7 +17,7 @@ resources:
       pages: 3
       regexp: '^[0-9]+[.][0-9]+[.][0-9]+-alpine$'
       semver:
-        matcher: '>= 2.7'
+        matcher: '>= 3.0'
 
   - name: registry-tag-resource-src
     type: git
@@ -49,7 +49,7 @@ jobs:
             type: registry-image
             source:
               repository: ruby
-              tag: 2.7.1
+              tag: 3.0.1
 
           inputs:
             - name: ruby-img-tag
@@ -90,7 +90,7 @@ jobs:
             type: registry-image
             source:
               repository: ruby
-              tag: 2.7.1
+              tag: 3.0.1
 
           inputs:
             - name: registry-tag-resource-src
