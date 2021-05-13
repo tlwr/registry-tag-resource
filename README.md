@@ -6,6 +6,11 @@ a
 [blog post on www.toby.codes](https://www.toby.codes/posts/2021-05-Automatic-updates-of-Docker-images-with-Concourse)
 describes how this resource type can be used
 
+## public image
+
+all passing commits are built into container images hosted on
+[github](https://github.com/users/tlwr/packages/container/package/registry-tag-resource)
+
 ## operations
 
 * `check` - looks for tags
