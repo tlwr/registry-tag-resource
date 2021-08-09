@@ -32,6 +32,15 @@ password = source.fetch('password', '')
 semver_matcher = source.dig('semver', 'matcher')
 semver_prefix = source.dig('semver', 'prefix') || ''
 
+sort_method = source.dig('sort', 'method')
+raise "sort.method and semver.matcher are exclusive" if !sort_method.nil? && !semver_matcher.nil?
+case sort_method
+when *%w(alphabetical numerical)
+  # do nothing
+else
+  raise "sort.method #{sort_method} is not recognised"
+end
+
 regexp = source.dig('regexp')
 
 tags = []
@@ -66,8 +75,19 @@ tags = tags.select { |t| t.match?(/#{regexp}/) } if regexp
 
 if semver_matcher
   tags = tags.sort_by { |t| Gem::Version.new(t.sub(/semver_prefix/, '')) }
+elsif sort_method
+  case sort_method
+  when 'alphabetical'
+    tags = tags.sort
+  when 'numerical'
+    tags = tags.sort_by { |t| t.gsub(/[^0-9], ''/).to_i, }
+  end
 else
   # order most recent last
+  tags = tags.reverse
+end
+
+if sort_reverse
   tags = tags.reverse
 end
 
