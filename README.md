@@ -64,6 +64,22 @@ source:
     # optional
     prefix: 'v'
     
+
+  # to sort by other methods
+
+  # optional
+  sort:
+    # exclusive with semver.matcher
+    #
+    # alphabetical or numerical
+    #
+    # optional
+    method: alphabetical
+
+    # for example, can be used to retrieve oldest tag as most recent version
+    #
+    # optional
+    reverse: true
 ```
 
 ## `check` - check for new tags
