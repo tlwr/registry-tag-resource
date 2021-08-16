@@ -75,7 +75,7 @@ end
 tags = tags.select { |t| t.match?(/#{regexp}/) } if regexp
 
 if semver_matcher
-  tags = tags.sort_by { |t| Gem::Version.new(t.sub(/semver_prefix/, '')) }
+  tags = tags.sort_by { |t| Gem::Version.new(t.sub(/#{semver_prefix}/, '')) }
 elsif sort_method
   case sort_method
   when 'alphabetical'
