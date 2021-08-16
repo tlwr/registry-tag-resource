@@ -179,5 +179,25 @@ RSpec.describe 'check' do
         expect(versions).to all(satisfy { |v| v['tag'].is_a? String })
       end
     end
+
+    context 'when using regexp and semver with prefices and pre-releases' do
+      before do
+        input['source']['uri'] = 'https://hub.docker.com/v2/repositories/minio/console'
+        input['source']['regexp'] = '^v\d+\.\d+\.\d+$'
+        input['source']['tags_per_page'] = 25
+        input['source']['pages'] = 1
+        input['source']['semver'] = {}
+        input['source']['semver']['prefix'] = 'v'
+        input['source']['semver']['matcher'] = '>= 0.8.0'
+      end
+
+      it 'generates a version' do
+        expect(err).to eq('')
+        expect(status).to be(0)
+
+        expect(versions.length).to be >= 1
+        expect(versions).to all(satisfy { |v| v['tag'].is_a? String })
+      end
+    end
   end
 end
