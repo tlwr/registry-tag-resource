@@ -66,11 +66,13 @@ tags = tags.select { |t| t.match?(/#{regexp}/) } if regexp
 
 # if using semver only make tags available if the tag satisfies semver matcher
 if semver_matcher
-  tags = tags.select { |t| t.match?(SEMVER_RE) }
-
   tags = tags.select do |t|
-    v = Semantic::Version.new(t.sub(/#{semver_prefix}/, ''))
-    v.satisfies? semver_matcher
+    tag_sans_prefix = t.sub(/#{semver_prefix}/, '')
+
+    next false unless tag_sans_prefix.match?(SEMVER_RE)
+
+    semver = Semantic::Version.new(tag_sans_prefix)
+    semver.satisfies?(semver_matcher)
   end
 end
 
