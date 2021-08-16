@@ -60,6 +60,10 @@ end
 # remove duplicate tags in case there is a push while paginating
 tags = tags.uniq
 
+# if using regexp select matching tags only
+# this can be combined with semver to discard pre-releases etc
+tags = tags.select { |t| t.match?(/#{regexp}/) } if regexp
+
 # if using semver only make tags available if the tag satisfies semver matcher
 if semver_matcher
   tags = tags.select { |t| t.match?(SEMVER_RE) }
@@ -69,10 +73,6 @@ if semver_matcher
     v.satisfies? semver_matcher
   end
 end
-
-# if using regexp select matching tags only
-# this can be combined with semver to discard pre-releases etc
-tags = tags.select { |t| t.match?(/#{regexp}/) } if regexp
 
 if semver_matcher
   tags = tags.sort_by { |t| Gem::Version.new(t.sub(/#{semver_prefix}/, '')) }
