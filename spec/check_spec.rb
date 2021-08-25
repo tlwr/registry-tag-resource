@@ -59,26 +59,26 @@ RSpec.describe 'check' do
     let(:versions) { JSON.parse(run[:out]) }
 
     context 'when using default source params' do
-      it 'generates 10 versions' do
+      it 'generates 25 versions' do
         expect(err).to eq('')
         expect(status).to be(0)
 
-        expect(versions.length).to eq(10)
+        expect(versions.length).to eq(25)
         expect(versions).to all(satisfy { |v| v['tag'].is_a? String })
       end
     end
 
     context 'when getting multiple pages' do
       before do
-        input['source']['pages'] = 2
-        input['source']['tags_per_page'] = 25
+        input['source']['pages'] = 3
+        input['source']['tags_per_page'] = 10
       end
 
-      it 'generates 50 versions' do
+      it 'generates 30 versions' do
         expect(err).to eq('')
         expect(status).to be(0)
 
-        expect(versions.length).to eq(50)
+        expect(versions.length).to eq(30)
         expect(versions).to all(satisfy { |v| v['tag'].is_a? String })
 
         ordered = versions.sort_by { |v| v['last_updated'] }
@@ -167,15 +167,15 @@ RSpec.describe 'check' do
     context 'when using quay.io' do
       before do
         input['source']['uri'] = 'https://quay.io/v2/coreos/etcd'
-        input['source']['tags_per_page'] = 25
-        input['source']['pages'] = 2
+        input['source']['tags_per_page'] = 10
+        input['source']['pages'] = 3
       end
 
-      it 'generates 50 versions' do
+      it 'generates 30 versions' do
         expect(err).to eq('')
         expect(status).to be(0)
 
-        expect(versions.length).to eq(50)
+        expect(versions.length).to eq(30)
         expect(versions).to all(satisfy { |v| v['tag'].is_a? String })
       end
     end
