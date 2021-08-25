@@ -23,7 +23,7 @@ raise 'mandatory source.uri not found' if uri.nil?
 pages = source.fetch('pages', '1').to_i
 raise "source.pages must be a positive integer" unless pages >= 1
 
-tags_per_page = source.fetch('tags_per_page', '10').to_i
+tags_per_page = source.fetch('tags_per_page', '25').to_i
 raise "source.tags_per_page must be a positive integer" unless tags_per_page >= 1
 
 username = source.fetch('username', '')
