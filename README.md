@@ -1,6 +1,8 @@
 # registry-tag-resource
 
-a [concourse](https://concourse-ci.org) resource for tags in a oci registry
+a [concourse](https://concourse-ci.org)
+[resource type](https://resource-types.concourse-ci.org)
+for tags in a oci registry
 
 a
 [blog post on www.toby.codes](https://www.toby.codes/posts/2021-05-Automatic-updates-of-Docker-images-with-Concourse)
