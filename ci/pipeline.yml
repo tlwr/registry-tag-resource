@@ -5,7 +5,7 @@ resource_types:
     type: registry-image
     source:
       repository: tlwr/registry-tag-resource
-      tag: 1593696431
+      tag: 6d98ababb33b88eb6d9a0d3d2824c3efe500c18b
 
 resources:
   - name: ruby-img-tag
