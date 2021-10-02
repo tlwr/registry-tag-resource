@@ -4,7 +4,7 @@ resource_types:
   - name: registry-tag
     type: registry-image
     source:
-      repository: tlwr/registry-tag-resource
+      repository: ghcr.io/tlwr/registry-tag-resource
       tag: 6d98ababb33b88eb6d9a0d3d2824c3efe500c18b
 
 resources:
