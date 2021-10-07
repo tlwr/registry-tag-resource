@@ -10,17 +10,18 @@ GEM
     ffi-compiler (1.0.1)
       ffi (>= 1.0.0)
       rake
-    http (4.4.1)
-      addressable (~> 2.3)
+    http (5.0.3)
+      addressable (~> 2.8)
       http-cookie (~> 1.0)
       http-form_data (~> 2.2)
-      http-parser (~> 1.2.0)
+      llhttp-ffi (~> 0.4.0)
     http-cookie (1.0.4)
       domain_name (~> 0.5)
     http-form_data (2.3.0)
-    http-parser (1.2.3)
-      ffi-compiler (>= 1.0, < 2.0)
     link_header (0.0.8)
+    llhttp-ffi (0.4.0)
+      ffi-compiler (~> 1.0)
+      rake (~> 13.0)
     public_suffix (4.0.6)
     rake (13.0.6)
     rspec (3.10.0)
@@ -45,7 +46,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  http (~> 4)
+  http (~> 5)
   link_header (= 0.0.8)
   rspec (~> 3)
   semantic (~> 1)
