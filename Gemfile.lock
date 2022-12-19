@@ -10,7 +10,7 @@ GEM
     ffi-compiler (1.0.1)
       ffi (>= 1.0.0)
       rake
-    http (5.1.0)
+    http (5.1.1)
       addressable (~> 2.8)
       http-cookie (~> 1.0)
       http-form_data (~> 2.2)
@@ -22,7 +22,7 @@ GEM
     llhttp-ffi (0.4.0)
       ffi-compiler (~> 1.0)
       rake (~> 13.0)
-    public_suffix (5.0.0)
+    public_suffix (5.0.1)
     rake (13.0.6)
     rspec (3.11.0)
       rspec-core (~> 3.11.0)
