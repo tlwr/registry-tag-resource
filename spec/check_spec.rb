@@ -1,6 +1,9 @@
 require 'open3'
 require 'json'
 
+CURRENT_GO_VERSION = '1.21.3'
+PREVIOUS_GO_VERSION = '1.21.2'
+
 RSpec.describe 'check' do
   def raw_run_check(in_stream, env={})
     executable = File.join(__dir__, '..', 'bin', 'check')
@@ -108,7 +111,7 @@ RSpec.describe 'check' do
 
       context 'when a current version exists' do
         before do
-          input['version'] = { "tag": "1.19.1" }
+          input['version'] = { "tag": CURRENT_GO_VERSION }
         end
 
         it 'generates only versions equal or after the current version' do
@@ -142,7 +145,7 @@ RSpec.describe 'check' do
 
       context 'when a current version exists' do
         before do
-          input['version'] = { "tag": "1.19.1" }
+          input['version'] = { "tag": CURRENT_GO_VERSION }
         end
 
         it 'generates only versions equal or after the current version' do
@@ -152,8 +155,8 @@ RSpec.describe 'check' do
           expect(versions.length).to be >= 1
           expect(versions).to all(satisfy { |v| v['tag'].is_a? String })
 
-          expect(versions).to include({ 'tag' => '1.19.1' })
-          expect(versions).not_to include({ 'tag' => '1.19.0' })
+          expect(versions).to include({ 'tag' => CURRENT_GO_VERSION })
+          expect(versions).not_to include({ 'tag' => PREVIOUS_GO_VERSION })
 
           ordered = versions.sort_by { |v| Gem::Version.new(v['tag']) }
           expect(versions).to eq(ordered)
